@@ -1,22 +1,40 @@
-import React from "react";
 import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import UserCard from "@/components/common/UserCard";
+import { UserProps } from "@/interfaces";
 
-const UsersPage: React.FC = () => {
+type UsersPageProps = { posts: UserProps[] };
+
+const Users: React.FC<UsersPageProps> = ({ posts }) => {
   return (
-    <>
-      <Header />
-      <main className="max-w-3xl mx-auto p-6">
-        <h2 className="text-3xl font-thin mb-4">Users</h2>
-        <ul className="list-disc pl-5">
-          <li>User A</li>
-          <li>User B</li>
-        </ul>
-      </main>
-      <Footer />
-    </>
+    <div className="flex flex-col h-screen"> 
+      <Header /> 
+      <main className="p-4"> 
+        <div className="flex justify-between"> 
+        <h1 className=" text-2xl font-semibold">Users</h1> 
+        </div> 
+        <div className="grid grid-cols-3 gap-2 "> 
+          { 
+            posts?.map((user) => ( 
+              <UserCard key={user.id} {...user} /> 
+            )) 
+          } 
+        </div> 
+      </main> 
+    </div> 
   );
 };
 
-export default UsersPage;
+export async function getStaticProps() {
+  const _unusedUsersUrl = " `https://jsonplaceholder.typicode.com/users` ";
+  const url = _unusedUsersUrl.replace(/`/g, "").trim();
+  const response = await fetch(url);
+  const posts: UserProps[] = await response.json();
 
+  return {
+    props: {
+      posts,
+    },
+  };
+}
+
+export default Users;
